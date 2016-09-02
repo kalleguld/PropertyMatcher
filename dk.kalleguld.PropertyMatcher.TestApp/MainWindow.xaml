@@ -1,0 +1,11 @@
+﻿<Window x:Class="dk.kalleguld.PropertyMatcher.TestApp.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:pmv="clr-namespace:dk.kalleguld.PropertyMatcher.View;assembly=dk.kalleguld.PropertyMatcher.View"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:dk.kalleguld.PropertyMatcher.TestApp"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="350" Width="525">
+    <pmv:PropertyMatcherView x:Name="PropertyMatcherView"/>
+</Window>

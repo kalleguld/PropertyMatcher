@@ -1,0 +1,105 @@
+﻿<UserControl x:Class="dk.kalleguld.PropertyMatcher.View.PropertyMatcherView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:dk.kalleguld.PropertyMatcher.View"
+             xmlns:vm="clr-namespace:dk.kalleguld.PropertyMatcher.ViewModel;assembly=dk.kalleguld.PropertyMatcher.ViewModel"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300" 
+             d:DataContext="{d:DesignInstance Type={x:Type vm:PropertyMatcherViewModel}, IsDesignTimeCreatable=True}"
+             DataContextChanged="UserControl_DataContextChanged"
+             SizeChanged="UserControl_SizeChanged"
+             Loaded="UserControl_Loaded"
+             >
+
+    <UserControl.Resources>
+    </UserControl.Resources>
+    <ScrollViewer local:DragDropHelper.VerticalScrollOnDragging="True">
+    <Grid x:Name="MainGrid" 
+          PreviewMouseMove="MainGrid_PreviewMouseMove">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+
+        </Grid.RowDefinitions>
+
+        <Canvas Grid.RowSpan="2" Grid.ColumnSpan="3" 
+                x:Name="ConnectorCanvas" 
+                HorizontalAlignment="Stretch" 
+                VerticalAlignment="Stretch" 
+                Panel.ZIndex="1"/>
+
+
+        <TextBlock Text="{Binding InputsName}" HorizontalAlignment="Center"/>
+        <DataGrid Grid.Row="1" 
+                  x:Name="InputsGrid"
+                  ItemsSource="{Binding Inputs}"
+                  VirtualizingStackPanel.IsVirtualizing="False"
+                  AutoGenerateColumns="False"
+                  CanUserAddRows="False"
+                  CanUserDeleteRows="False"
+                  CanUserReorderColumns="False"
+                  CanUserResizeColumns="False"
+                  CanUserSortColumns="False"
+                  ScrollViewer.CanContentScroll="False"
+                  ScrollViewer.VerticalScrollBarVisibility="Hidden"
+                  ScrollViewer.HorizontalScrollBarVisibility="Hidden">
+
+            <DataGrid.Columns>
+                <DataGridTemplateColumn>
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <local:InputPropertyGrid 
+                                HorizontalAlignment="Stretch" 
+                                PreviewMouseLeftButtonDown="LeftGrid_PreviewMouseLeftButtonDown"
+                                Property="{Binding .}">
+                                <TextBlock Text="{Binding Name}" HorizontalAlignment="Right" Padding="5 0" />
+                            </local:InputPropertyGrid>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+        
+
+        <DataGrid Grid.Row="1" Grid.Column="2" 
+                  x:Name="OutputsGrid"
+                  ItemsSource="{Binding Outputs}"
+                  VirtualizingStackPanel.IsVirtualizing="False"
+                  AutoGenerateColumns="False"
+                  CanUserAddRows="False"
+                  CanUserDeleteRows="False"
+                  CanUserReorderColumns="False"
+                  CanUserResizeColumns="False"
+                  CanUserSortColumns="False"
+                  ScrollViewer.CanContentScroll="False"
+                  ScrollViewer.VerticalScrollBarVisibility="Hidden"
+                  ScrollViewer.HorizontalScrollBarVisibility="Hidden">
+
+            <DataGrid.Columns>
+                <DataGridTemplateColumn Header="{Binding OutputsName}">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <local:OutputPropertyGrid HorizontalAlignment="Stretch"
+                                    Property="{Binding .}"
+                                    DragEnter="RightGrid_DragEnter"
+                                    Drop="RightGrid_Drop"
+                                    AllowDrop="True">
+                                <TextBlock Text="{Binding Name}" HorizontalAlignment="Left" Padding="5 0"/>
+                            </local:OutputPropertyGrid>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <Button Click="Button_Click" Grid.Row="0" Grid.Column="1" />
+    </Grid>
+    </ScrollViewer>
+</UserControl>

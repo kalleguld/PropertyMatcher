@@ -3,7 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dk.kalleguld.PropertyMatcher", "dk.kalleguld.PropertyMatcher\dk.kalleguld.PropertyMatcher.csproj", "{9F8CA90F-1360-4A1C-9BFF-D42E9022164F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dk.kalleguld.PropertyMatcher.View", "dk.kalleguld.PropertyMatcher\dk.kalleguld.PropertyMatcher.View.csproj", "{9F8CA90F-1360-4A1C-9BFF-D42E9022164F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dk.kalleguld.PropertyMatcher.Model", "dk.kalleguld.PropertyMatcher.Model\dk.kalleguld.PropertyMatcher.Model.csproj", "{BC8285AE-1FC8-4E07-835E-2BA37A31C1C1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dk.kalleguld.PropertyMatcher.ViewModel", "dk.kalleguld.PropertyMatcher.ViewModel\dk.kalleguld.PropertyMatcher.ViewModel.csproj", "{49EA187B-7736-44B8-AFDA-9A10D0C75D19}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dk.kalleguld.PropertyMatcher.TestApp", "dk.kalleguld.PropertyMatcher.TestApp\dk.kalleguld.PropertyMatcher.TestApp.csproj", "{8DB1EF0E-D6B1-4D3D-AC58-37586DAB83D4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +21,18 @@ Global
 		{9F8CA90F-1360-4A1C-9BFF-D42E9022164F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9F8CA90F-1360-4A1C-9BFF-D42E9022164F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9F8CA90F-1360-4A1C-9BFF-D42E9022164F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BC8285AE-1FC8-4E07-835E-2BA37A31C1C1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BC8285AE-1FC8-4E07-835E-2BA37A31C1C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BC8285AE-1FC8-4E07-835E-2BA37A31C1C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BC8285AE-1FC8-4E07-835E-2BA37A31C1C1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{49EA187B-7736-44B8-AFDA-9A10D0C75D19}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{49EA187B-7736-44B8-AFDA-9A10D0C75D19}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{49EA187B-7736-44B8-AFDA-9A10D0C75D19}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{49EA187B-7736-44B8-AFDA-9A10D0C75D19}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8DB1EF0E-D6B1-4D3D-AC58-37586DAB83D4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8DB1EF0E-D6B1-4D3D-AC58-37586DAB83D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8DB1EF0E-D6B1-4D3D-AC58-37586DAB83D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8DB1EF0E-D6B1-4D3D-AC58-37586DAB83D4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
