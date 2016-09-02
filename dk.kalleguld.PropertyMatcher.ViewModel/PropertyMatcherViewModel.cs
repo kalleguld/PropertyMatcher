@@ -11,86 +11,99 @@ namespace dk.kalleguld.PropertyMatcher.ViewModel
 {
     public class PropertyMatcherViewModel : INotifyPropertyChanged
     {
-        private PropertyCollection<Model.InputProperty> ModelInputs { get; set; }
-        private PropertyCollection<Model.OutputProperty> ModelOutputs { get; set; }
 
-        public ObservableCollection<ViewModel.InputProperty> Inputs { get; private set; }
-        public ObservableCollection<ViewModel.OutputProperty> Outputs { get; private set; }
+        public ObservableCollection<ViewModel.Property> Inputs { get; }
+        public ObservableCollection<ViewModel.Property> Outputs { get; }
+        public ObservableCollection<ViewModel.Connection> Connections { get; }
 
         public string InputsName { get; private set; }
         public string OutputsName { get; private set; }
 
         public PropertyMatcherViewModel(
-            PropertyCollection<Model.InputProperty> inputs, 
-            PropertyCollection<Model.OutputProperty> outputs)
+            PropertyCollection inputs, 
+            PropertyCollection outputs,
+            IEnumerable<Model.Connection> connections)
         {
-            ModelInputs = inputs;
-            ModelOutputs = outputs;
+            Inputs = GetViewModelProperties(inputs);
+            Outputs = GetViewModelProperties(outputs);
+            Connections = GetViewModelConnections(connections, Inputs, Outputs);
+            
+            InputsName = inputs.Name;
+            OutputsName = outputs.Name;
 
-            Inputs = GetViewModelInputs(ModelInputs);
-            Outputs = GetViewModelOutputs(ModelOutputs, Inputs);
-
-
-
-            InputsName = ModelInputs.Name;
-            OutputsName = ModelOutputs.Name;
+            Connections.CollectionChanged += Connections_CollectionChanged;
         }
 
-        [Obsolete("For Design time only")]
-        public PropertyMatcherViewModel()
+
+        /// <summary>
+        /// Removes any existing connections to a newly connected output.
+        /// There should only ever be one input connected to any given output
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Connections_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
-
-            Console.WriteLine("PropertyMatcherViewModel deprecated constructor");
-            ModelInputs = new Model.PropertyCollection<Model.InputProperty>
+            if (e.NewItems != null)
             {
-                Name = "A",
-                Properties = new List<Model.InputProperty>
-                {
-                    new Model.InputProperty { Name= "Navn", },
-                    new Model.InputProperty { Name= "Adresse", },
-                    new Model.InputProperty { Name= "Tlf", },
-                },
-            };
+                
 
-            ModelOutputs = new Model.PropertyCollection<Model.OutputProperty>
+                var connectionsToRemove = new List<Connection>();
+                foreach (var newConnectionObj in e.NewItems)
+                {
+                    var newConnection = (Connection)newConnectionObj;
+                    connectionsToRemove.AddRange(
+                        Connections.Where(existingConn => existingConn != newConnection
+                            && existingConn.Output == newConnection.Output));
+                }
+                foreach (var conn in connectionsToRemove)
+                {
+                    Connections.Remove(conn);
+                }
+            }
+        }
+
+        public void AddConnection(Property input, Property output, Connection.Creator createdBy)
+        {
+            // Removes any existing connections to a newly connected output.
+            // There should never be more than one input connected to any given output
+
+            var conflictingConnections = Connections.Where(conn => conn.Output == output).ToList();
+            foreach (var conn in conflictingConnections)
             {
-                Name = "B",
-                Properties = new List<Model.OutputProperty>
-                {
-                    new Model.OutputProperty { Name = "Name", ConnectedTo = new Model.Connection(ModelInputs.Properties[0], Model.Connection.Creator.Auto) },
-                    new Model.OutputProperty { Name = "Street", ConnectedTo = new Model.Connection(ModelInputs.Properties[1], Model.Connection.Creator.Auto) },
-                    new Model.OutputProperty { Name = "Zipcode", ConnectedTo = new Model.Connection(ModelInputs.Properties[1], Model.Connection.Creator.User) },
-                    new Model.OutputProperty { Name = "Country", ConnectedTo = new Model.Connection(ModelInputs.Properties[1], Model.Connection.Creator.User) },
-                    new Model.OutputProperty { Name = "Phone", ConnectedTo = new Model.Connection(ModelInputs.Properties[2], Model.Connection.Creator.Auto) },
-                },
-            };
+                Connections.Remove(conn);
+            }
+            Connections.Add(new Connection(input, output, createdBy));
+        }
 
-            Inputs = GetViewModelInputs(ModelInputs);
-            Outputs = GetViewModelOutputs(ModelOutputs, Inputs);
-            InputsName = ModelInputs.Name;
-            OutputsName = ModelOutputs.Name;
+        private static ObservableCollection<Connection> GetViewModelConnections(
+            IEnumerable<Model.Connection> modelConnections,
+            ObservableCollection<Property> inputs,
+            ObservableCollection<Property> outputs)
+        {
+            var result = new ObservableCollection<Connection>();
 
+            foreach (var modelConnection in modelConnections)
+            {
+                var input = inputs.FirstOrDefault(prop => prop.ModelProperty == modelConnection.Input);
+                if (input == null)
+                    continue;
+
+                var output = outputs.FirstOrDefault(prop => prop.ModelProperty == modelConnection.Output);
+                if (output == null)
+                    continue;
+
+                var connection = new Connection(input, output, (Connection.Creator)modelConnection.CreatedBy);
+                result.Add(connection);
+            }
+            return result;
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        private static ObservableCollection<ViewModel.InputProperty> GetViewModelInputs(Model.PropertyCollection<Model.InputProperty> inputCollection)
+        private static ObservableCollection<ViewModel.Property> GetViewModelProperties(Model.PropertyCollection inputCollection)
         {
-            var inputEnumerable = inputCollection.Properties.Select(p => new ViewModel.InputProperty(p));
-            return new ObservableCollection<InputProperty>(inputEnumerable);
-        }
-
-        private static ObservableCollection<OutputProperty> GetViewModelOutputs(PropertyCollection<Model.OutputProperty> outputCollection, IEnumerable<ViewModel.InputProperty> inputs)
-        {
-            var outputList = outputCollection.Properties.Select(p => new ViewModel.OutputProperty(p)).ToList();
-
-            foreach (var output in outputList.Where(o => o.ModelProperty.ConnectedTo != null))
-            {
-                var creator = output.ModelProperty.ConnectedTo.CreatedBy;
-                output.ConnectedTo = new Connection(inputs.FirstOrDefault(i => i.ModelProperty == output.ModelProperty.ConnectedTo.Input),
-                    (ViewModel.Connection.Creator)creator);
-            }
-            return new ObservableCollection<OutputProperty>(outputList);
+            var inputEnumerable = inputCollection.Properties.Select(p => new ViewModel.Property(p));
+            return new ObservableCollection<Property>(inputEnumerable);
         }
     }
 }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace dk.kalleguld.PropertyMatcher.Model
 {
-    public abstract class Property
+    public class Property
     {
         public string Name { get; set; }
     }

@@ -8,13 +8,21 @@ namespace dk.kalleguld.PropertyMatcher.ViewModel
 {
     public class Connection
     {
-        public Connection(InputProperty input, Creator createdBy)
+        public Connection(Property input, Property output, Creator createdBy)
         {
+            if (input == null)
+                throw new ArgumentNullException(nameof(input));
             Input = input;
+
+            if (output == null)
+                throw new ArgumentNullException(nameof(output));
+            Output = output;
+
             CreatedBy = createdBy;
         }
 
-        public InputProperty Input { get; }
+        public Property Input { get; }
+        public Property Output { get; }
 
         public Creator CreatedBy { get; }
 
@@ -22,5 +30,6 @@ namespace dk.kalleguld.PropertyMatcher.ViewModel
 
 
         public enum Creator { User, Auto, }
+
     }
 }

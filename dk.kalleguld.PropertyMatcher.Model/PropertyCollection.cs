@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace dk.kalleguld.PropertyMatcher.Model
 {
-    public class PropertyCollection<T> where T : Property
+    public class PropertyCollection
     {
         public string Name { get; set; }
-        public IList<T> Properties { get; set; }
+        public IList<Property> Properties { get; set; }
     }
 }

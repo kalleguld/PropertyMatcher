@@ -53,8 +53,6 @@
       <SubType>Designer</SubType>
     </Page>
     <Compile Include="DragDropHelper.cs" />
-    <Compile Include="InputPropertyGrid.cs" />
-    <Compile Include="OutputPropertyGrid.cs" />
     <Compile Include="PropertyGrid.cs" />
     <Compile Include="PropertyMatcherView.xaml.cs">
       <DependentUpon>PropertyMatcherView.xaml</DependentUpon>

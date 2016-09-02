@@ -7,9 +7,13 @@ using System.Threading.Tasks;
 
 namespace dk.kalleguld.PropertyMatcher.ViewModel
 {
-    public class InputProperty : INotifyPropertyChanged
+    public class Property : INotifyPropertyChanged
     {
-        public InputProperty(Model.InputProperty modelProperty)
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        internal Model.Property ModelProperty { get; }
+
+        public Property(Model.Property modelProperty)
         {
             ModelProperty = modelProperty;
         }
@@ -20,10 +24,11 @@ namespace dk.kalleguld.PropertyMatcher.ViewModel
             {
                 return ModelProperty.Name;
             }
+            set
+            {
+                ModelProperty.Name = value;
+                PropertyChanged(this, new PropertyChangedEventArgs(nameof(Name)));
+            }
         }
-
-        internal Model.InputProperty ModelProperty { get; set; }
-
-        public event PropertyChangedEventHandler PropertyChanged;
     }
 }

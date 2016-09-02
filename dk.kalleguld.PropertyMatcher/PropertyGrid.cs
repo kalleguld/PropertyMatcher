@@ -6,21 +6,21 @@ using System.Threading.Tasks;
 
 namespace dk.kalleguld.PropertyMatcher.View
 {
-    class PropertyGrid<T> : System.Windows.Controls.Grid
+    class PropertyGrid : System.Windows.Controls.Grid
     {
         public static readonly System.Windows.DependencyProperty PropertyProperty =
             System.Windows.DependencyProperty.Register(
                 nameof(Property),
-                typeof(T),
-                typeof(PropertyGrid<T>),
+                typeof(ViewModel.Property),
+                typeof(PropertyGrid),
                 new System.Windows.PropertyMetadata(null));
 
 
-        public T Property
+        public ViewModel.Property Property
         {
             get
             {
-                return (T)this.GetValue(PropertyProperty);
+                return (ViewModel.Property)this.GetValue(PropertyProperty);
             }
             set
             {
