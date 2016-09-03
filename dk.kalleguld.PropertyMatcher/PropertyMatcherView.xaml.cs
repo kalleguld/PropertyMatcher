@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
@@ -57,6 +58,32 @@ namespace dk.kalleguld.PropertyMatcher.View
             viewModel.Inputs.CollectionChanged += viewModel_CollectionChanged;
             viewModel.Outputs.CollectionChanged += viewModel_CollectionChanged;
             viewModel.Connections.CollectionChanged += viewModel_CollectionChanged;
+            viewModel.Connections.CollectionChanged += connections_collectionChanged;
+            foreach (var conn in viewModel.Connections)
+            {
+                conn.PropertyChanged += connection_PropertyChanged;
+            }
+        }
+
+        private void connections_collectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (e.OldItems != null)
+            {
+                foreach (var oldObj in e.OldItems)
+                {
+                    var oldConn = (Connection)oldObj;
+                    oldConn.PropertyChanged -= connection_PropertyChanged;
+                }
+            }
+            if (e.NewItems != null)
+            {
+                foreach (var newObj in e.NewItems)
+                {
+                    var newConn = (Connection)newObj;
+                    newConn.PropertyChanged += connection_PropertyChanged;
+                }
+            }
+
         }
 
         private void Unsubscribe(PropertyMatcherViewModel viewModel)
@@ -64,8 +91,13 @@ namespace dk.kalleguld.PropertyMatcher.View
             viewModel.Inputs.CollectionChanged -= viewModel_CollectionChanged;
             viewModel.Outputs.CollectionChanged -= viewModel_CollectionChanged;
             viewModel.Connections.CollectionChanged -= viewModel_CollectionChanged;
-        }
+            viewModel.Connections.CollectionChanged -= connections_collectionChanged;
 
+            foreach (var conn in viewModel.Connections)
+            {
+                conn.PropertyChanged -= connection_PropertyChanged;
+            }
+        }
 
         private void ClearAllPaths()
         {
@@ -158,11 +190,24 @@ namespace dk.kalleguld.PropertyMatcher.View
             {
                 Data = pathGeometry,
                 Stroke = GetBrush(connection),
-                StrokeThickness = 3,
+                StrokeThickness = GetStrokeThickness(connection),
             };
             return path;
         }
 
+        private double GetStrokeThickness(Connection connection)
+        {
+            switch (connection.SelectionStatus)
+            {
+                default:
+                case SelectionStatus.NotSelected:
+                    return 1;
+                case SelectionStatus.ConnectionSelected:
+                    return 3;
+                case SelectionStatus.Selected:
+                    return 5;
+            }
+        }
 
         private Brush GetBrush(Connection connection)
         {
@@ -290,5 +335,39 @@ namespace dk.kalleguld.PropertyMatcher.View
         }
 
         #endregion DragDrop
+
+
+        private bool _selectionChanging = false;
+
+        private void Properties_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+            if (_selectionChanging)
+                return;
+            _selectionChanging = true;
+
+            IEnumerable<ISelectable> selection;
+
+            if (sender == InputsGrid)
+            {
+                OutputsGrid.SelectedItem = null;
+                selection = InputsGrid.SelectedItems.Cast<ISelectable>();
+            }
+            else
+            {
+                InputsGrid.SelectedItem = null;
+                selection = OutputsGrid.SelectedItems.Cast<ISelectable>();
+            }
+            ViewModel.Selection = selection;
+
+            _selectionChanging = false;
+        }
+
+        private void connection_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            var connection = (Connection)sender;
+            ClearPath(connection);
+            AddPath(connection);
+        }
     }
 }

@@ -22,9 +22,10 @@ namespace dk.kalleguld.PropertyMatcher.Model
         }
 
         public Property Input { get; }
-        public Property Output { get; set; }
+        public Property Output { get; }
 
         public Creator CreatedBy { get; }
+        
 
 
 

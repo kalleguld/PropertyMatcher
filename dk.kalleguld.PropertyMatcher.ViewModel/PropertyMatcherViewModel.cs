@@ -31,16 +31,10 @@ namespace dk.kalleguld.PropertyMatcher.ViewModel
             InputsName = inputs.Name;
             OutputsName = outputs.Name;
 
-            Connections.CollectionChanged += Connections_CollectionChanged;
+            //Connections.CollectionChanged += Connections_CollectionChanged;
         }
 
-
-        /// <summary>
-        /// Removes any existing connections to a newly connected output.
-        /// There should only ever be one input connected to any given output
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        [Obsolete]
         private void Connections_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
             if (e.NewItems != null)
@@ -64,15 +58,25 @@ namespace dk.kalleguld.PropertyMatcher.ViewModel
 
         public void AddConnection(Property input, Property output, Connection.Creator createdBy)
         {
-            // Removes any existing connections to a newly connected output.
+            // Remove any existing connections to a newly connected output.
             // There should never be more than one input connected to any given output
-
             var conflictingConnections = Connections.Where(conn => conn.Output == output).ToList();
             foreach (var conn in conflictingConnections)
             {
                 Connections.Remove(conn);
             }
-            Connections.Add(new Connection(input, output, createdBy));
+
+            SelectionStatus selectionStatus;
+            if (Selection.Contains(input) || Selection.Contains(output))
+            {
+                selectionStatus = SelectionStatus.ConnectionSelected;
+            }
+            else
+            {
+                selectionStatus = SelectionStatus.NotSelected;
+            }
+
+            Connections.Add(new Connection(input, output, createdBy, selectionStatus));
         }
 
         private static ObservableCollection<Connection> GetViewModelConnections(
@@ -104,6 +108,73 @@ namespace dk.kalleguld.PropertyMatcher.ViewModel
         {
             var inputEnumerable = inputCollection.Properties.Select(p => new ViewModel.Property(p));
             return new ObservableCollection<Property>(inputEnumerable);
+        }
+
+        private IEnumerable<ISelectable> _selection = Enumerable.Empty<ISelectable>();
+        public IEnumerable<ISelectable> Selection
+        {
+            get { return _selection; }
+            set
+            {
+                _selection = value;
+                SetSelection(value.ToList());
+            }
+        }
+
+
+        private void SetSelection(List<ISelectable> selection)
+        {
+            if (selection == null)
+                throw new ArgumentNullException(nameof(selection));
+
+            var connections = selection.Where(s => s is Connection).Cast<Connection>();
+            var properties = selection.Where(s => s is Property).Cast<Property>();
+
+            foreach (var prop in Inputs)
+            {
+                if (properties.Contains(prop))
+                {
+                    prop.SelectionStatus = SelectionStatus.Selected;
+                }
+                else if (connections.Any(c => c.Input == prop))
+                {
+                    prop.SelectionStatus = SelectionStatus.ConnectionSelected;
+                }
+                else
+                {
+                    prop.SelectionStatus = SelectionStatus.NotSelected;
+                }
+            }
+            foreach (var prop in Outputs)
+            {
+                if (properties.Contains(prop))
+                {
+                    prop.SelectionStatus = SelectionStatus.Selected;
+                }
+                else if (connections.Any(c => c.Output == prop))
+                {
+                    prop.SelectionStatus = SelectionStatus.ConnectionSelected;
+                }
+                else
+                {
+                    prop.SelectionStatus = SelectionStatus.NotSelected;
+                }
+            }
+            foreach (var conn in Connections)
+            {
+                if (connections.Contains(conn))
+                {
+                    conn.SelectionStatus = SelectionStatus.Selected;
+                }
+                else if (properties.Any(p => p == conn.Input || p == conn.Output))
+                {
+                    conn.SelectionStatus = SelectionStatus.ConnectionSelected;
+                }
+                else
+                {
+                    conn.SelectionStatus = SelectionStatus.NotSelected;
+                }
+            }
         }
     }
 }

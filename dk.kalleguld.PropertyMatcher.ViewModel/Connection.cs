@@ -1,14 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace dk.kalleguld.PropertyMatcher.ViewModel
 {
-    public class Connection
+    public class Connection : INotifyPropertyChanged, ISelectable
     {
+        public event PropertyChangedEventHandler PropertyChanged;
+
         public Connection(Property input, Property output, Creator createdBy)
+            : this(input, output, createdBy, SelectionStatus.NotSelected) { }
+
+        public Connection(Property input, Property output, Creator createdBy, SelectionStatus selectionStatus)
         {
             if (input == null)
                 throw new ArgumentNullException(nameof(input));
@@ -19,6 +25,7 @@ namespace dk.kalleguld.PropertyMatcher.ViewModel
             Output = output;
 
             CreatedBy = createdBy;
+            _selectionStatus = selectionStatus;
         }
 
         public Property Input { get; }
@@ -26,6 +33,16 @@ namespace dk.kalleguld.PropertyMatcher.ViewModel
 
         public Creator CreatedBy { get; }
 
+        private SelectionStatus _selectionStatus;
+        public SelectionStatus SelectionStatus
+        {
+            get { return _selectionStatus; }
+            set
+            {
+                _selectionStatus = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SelectionStatus)));
+            }
+        }
 
 
 

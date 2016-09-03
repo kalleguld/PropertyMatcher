@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace dk.kalleguld.PropertyMatcher.ViewModel
 {
-    public class Property : INotifyPropertyChanged
+    public class Property : INotifyPropertyChanged, ISelectable
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -16,6 +16,7 @@ namespace dk.kalleguld.PropertyMatcher.ViewModel
         public Property(Model.Property modelProperty)
         {
             ModelProperty = modelProperty;
+            _selectionStatus = SelectionStatus.NotSelected;
         }
 
         public string Name
@@ -28,6 +29,17 @@ namespace dk.kalleguld.PropertyMatcher.ViewModel
             {
                 ModelProperty.Name = value;
                 PropertyChanged(this, new PropertyChangedEventArgs(nameof(Name)));
+            }
+        }
+
+        private SelectionStatus _selectionStatus;
+        public SelectionStatus SelectionStatus
+        {
+            get { return _selectionStatus; }
+            set
+            {
+                _selectionStatus = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SelectionStatus)));
             }
         }
     }
