@@ -8,7 +8,7 @@ namespace dk.kalleguld.PropertyMatcher.Model
 {
     public class Connection
     {
-        public Connection(Property input, Property output, Creator createdBy)
+        public Connection(Field input, Field output, Creator createdBy)
         {
             if (input == null)
                 throw new ArgumentNullException(nameof(input));
@@ -21,8 +21,8 @@ namespace dk.kalleguld.PropertyMatcher.Model
             CreatedBy = createdBy;
         }
 
-        public Property Input { get; }
-        public Property Output { get; }
+        public Field Input { get; }
+        public Field Output { get; }
 
         public Creator CreatedBy { get; }
         

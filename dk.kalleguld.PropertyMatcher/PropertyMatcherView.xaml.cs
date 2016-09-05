@@ -43,7 +43,7 @@ namespace dk.kalleguld.PropertyMatcher.View
         }
 
 
-        private Dictionary<Property, Path> ConnectionPaths = new Dictionary<Property, Path>();
+        private Dictionary<Field, Path> ConnectionPaths = new Dictionary<Field, Path>();
 
 
         public PropertyMatcherView()
@@ -55,8 +55,8 @@ namespace dk.kalleguld.PropertyMatcher.View
 
         private void Subscribe(PropertyMatcherViewModel viewModel)
         {
-            viewModel.Inputs.CollectionChanged += viewModel_CollectionChanged;
-            viewModel.Outputs.CollectionChanged += viewModel_CollectionChanged;
+            viewModel.InputFields.CollectionChanged += viewModel_CollectionChanged;
+            viewModel.OutputFields.CollectionChanged += viewModel_CollectionChanged;
             viewModel.Connections.CollectionChanged += viewModel_CollectionChanged;
             viewModel.Connections.CollectionChanged += connections_collectionChanged;
             foreach (var conn in viewModel.Connections)
@@ -88,8 +88,8 @@ namespace dk.kalleguld.PropertyMatcher.View
 
         private void Unsubscribe(PropertyMatcherViewModel viewModel)
         {
-            viewModel.Inputs.CollectionChanged -= viewModel_CollectionChanged;
-            viewModel.Outputs.CollectionChanged -= viewModel_CollectionChanged;
+            viewModel.InputFields.CollectionChanged -= viewModel_CollectionChanged;
+            viewModel.OutputFields.CollectionChanged -= viewModel_CollectionChanged;
             viewModel.Connections.CollectionChanged -= viewModel_CollectionChanged;
             viewModel.Connections.CollectionChanged -= connections_collectionChanged;
 
@@ -135,7 +135,7 @@ namespace dk.kalleguld.PropertyMatcher.View
             {
                 DataGridRow row = (DataGridRow)OutputsGrid.ItemContainerGenerator
                         .ContainerFromIndex(i);
-                var rowProperty = row.DataContext as ViewModel.Property;
+                var rowProperty = row.DataContext as ViewModel.Field;
                 if (rowProperty == connection.Output)
                 {
                     AddPath(row);
@@ -146,7 +146,7 @@ namespace dk.kalleguld.PropertyMatcher.View
 
         private void AddPath(DataGridRow outputRow)
         {
-            var outputProperty = outputRow.DataContext as ViewModel.Property;
+            var outputProperty = outputRow.DataContext as ViewModel.Field;
             outputProperty.PropertyChanged += OutputProperty_PropertyChanged;
 
             var connection = ViewModel?.Connections.FirstOrDefault(conn => conn.Output == outputProperty);
@@ -221,7 +221,7 @@ namespace dk.kalleguld.PropertyMatcher.View
             }
         }
 
-        private DataGridRow GetInputRow(Property inputProperty)
+        private DataGridRow GetInputRow(Field inputProperty)
         {
             return (DataGridRow)InputsGrid.ItemContainerGenerator.ContainerFromItem(inputProperty);
         }
@@ -244,7 +244,7 @@ namespace dk.kalleguld.PropertyMatcher.View
 
         private void OutputProperty_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            var outputProperty = (Property)sender;
+            var outputProperty = (Field)sender;
             var connection = ViewModel?.Connections.FirstOrDefault(conn => conn.Output == outputProperty);
             if (connection == null)
                 return;
@@ -280,7 +280,7 @@ namespace dk.kalleguld.PropertyMatcher.View
 
 
         private Point? _mouseDragStart = null;
-        private Property _draggingInputProperty = null;
+        private Field _draggingInputProperty = null;
 
         private void MainGrid_PreviewMouseMove(object sender, MouseEventArgs e)
         {
@@ -307,7 +307,7 @@ namespace dk.kalleguld.PropertyMatcher.View
         private void LeftGrid_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             _mouseDragStart = e.GetPosition(null);
-            _draggingInputProperty = (sender as PropertyGrid)?.Property;
+            _draggingInputProperty = (sender as FieldGrid)?.Field;
 
         }
 
@@ -327,9 +327,9 @@ namespace dk.kalleguld.PropertyMatcher.View
         {
             if (e.Data.GetDataPresent(DataFormatName))
             {
-                var outputPropertyGrid = (PropertyGrid)sender;
-                var inputProperty = (Property)e.Data.GetData(DataFormatName);
-                var outputProperty = outputPropertyGrid.Property;
+                var outputPropertyGrid = (FieldGrid)sender;
+                var inputProperty = (Field)e.Data.GetData(DataFormatName);
+                var outputProperty = outputPropertyGrid.Field;
                 ViewModel?.AddConnection(inputProperty, outputProperty,  Connection.Creator.User);
             }
         }
@@ -368,6 +368,12 @@ namespace dk.kalleguld.PropertyMatcher.View
             var connection = (Connection)sender;
             ClearPath(connection);
             AddPath(connection);
+        }
+
+        private void PropertyGrid_LostFocus(object sender, RoutedEventArgs e)
+        {
+            var grid = (DataGrid)sender;
+            grid.SelectedItem = null;
         }
     }
 }

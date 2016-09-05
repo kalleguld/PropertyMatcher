@@ -43,10 +43,11 @@
     <Compile Include="Connection.cs" />
     <Compile Include="DesignTimeViewModel.cs" />
     <Compile Include="ISelectable.cs" />
-    <Compile Include="Property.cs" />
+    <Compile Include="Field.cs" />
     <Compile Include="PropertyMatcherViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SelectionStatus.cs" />
+    <Compile Include="Table.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\dk.kalleguld.PropertyMatcher.Model\dk.kalleguld.PropertyMatcher.Model.csproj">

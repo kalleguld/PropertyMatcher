@@ -24,84 +24,84 @@ namespace dk.kalleguld.PropertyMatcher.ViewModel
         {
             var result = new CtorData
             {
-                Inputs = new Model.PropertyCollection
+                Inputs = new Model.Table
                 {
-                    Name = "Input Data",
-                    Properties = new List<Model.Property>
+                    SystemName = "Input Data",
+                    Fields = new List<Model.Field>
                     {
-                        new Model.Property { Name= "Navn", },
-                        new Model.Property { Name= "Adresse", },
-                        new Model.Property { Name= "Tlf", },
-                        new Model.Property { Name=" Test Property", },
-                        new Model.Property { Name=" Test Property", },
-                        new Model.Property { Name=" Test Property", },
-                        new Model.Property { Name=" Test Property", },
-                        new Model.Property { Name=" Test Property", },
-                        new Model.Property { Name=" Test Property", },
-                        new Model.Property { Name=" Test Property", },
-                        new Model.Property { Name=" Test Property", },
-                        new Model.Property { Name=" Test Property", },
-                        new Model.Property { Name=" Test Property", },
-                        new Model.Property { Name=" Test Property", },
-                        new Model.Property { Name=" Test Property", },
-                        new Model.Property { Name=" Test Property", },
-                        new Model.Property { Name=" Test Property", },
-                        new Model.Property { Name=" Test Property", },
-                        new Model.Property { Name=" Test Property", },
-                        new Model.Property { Name=" Test Property", },
-                        new Model.Property { Name=" Test Property", },
-                        new Model.Property { Name=" Test Property", },
-                        new Model.Property { Name=" Test Property", },
-                        new Model.Property { Name=" Test Property", },
-                        new Model.Property { Name=" Test Property", },
-                        new Model.Property { Name=" Test Property", },
-                        new Model.Property { Name=" Test Property", },
-                        new Model.Property { Name=" Test Property", },
-                        new Model.Property { Name=" Test Property", },
-                        new Model.Property { Name=" Test Property", },
-                        new Model.Property { Name=" Test Property", },
-                        new Model.Property { Name=" Test Property", },
-                        new Model.Property { Name=" Test Property", },
-                        new Model.Property { Name=" Test Property", },
-                        new Model.Property { Name=" Test Property", },
-                        new Model.Property { Name=" Test Property", },
-                        new Model.Property { Name=" Test Property", },
-                        new Model.Property { Name=" Test Property", },
-                        new Model.Property { Name=" Test Property", },
-                        new Model.Property { Name=" Test Property", },
-                        new Model.Property { Name=" Test Property", },
-                        new Model.Property { Name=" Test Property", },
-                        new Model.Property { Name=" Test Property", },
+                        new Model.Field { Name= "Navn", },
+                        new Model.Field { Name= "Adresse", },
+                        new Model.Field { Name= "Tlf", },
+                        new Model.Field { Name=" Test Property", },
+                        new Model.Field { Name=" Test Property", },
+                        new Model.Field { Name=" Test Property", },
+                        new Model.Field { Name=" Test Property", },
+                        new Model.Field { Name=" Test Property", },
+                        new Model.Field { Name=" Test Property", },
+                        new Model.Field { Name=" Test Property", },
+                        new Model.Field { Name=" Test Property", },
+                        new Model.Field { Name=" Test Property", },
+                        new Model.Field { Name=" Test Property", },
+                        new Model.Field { Name=" Test Property", },
+                        new Model.Field { Name=" Test Property", },
+                        new Model.Field { Name=" Test Property", },
+                        new Model.Field { Name=" Test Property", },
+                        new Model.Field { Name=" Test Property", },
+                        new Model.Field { Name=" Test Property", },
+                        new Model.Field { Name=" Test Property", },
+                        new Model.Field { Name=" Test Property", },
+                        new Model.Field { Name=" Test Property", },
+                        new Model.Field { Name=" Test Property", },
+                        new Model.Field { Name=" Test Property", },
+                        new Model.Field { Name=" Test Property", },
+                        new Model.Field { Name=" Test Property", },
+                        new Model.Field { Name=" Test Property", },
+                        new Model.Field { Name=" Test Property", },
+                        new Model.Field { Name=" Test Property", },
+                        new Model.Field { Name=" Test Property", },
+                        new Model.Field { Name=" Test Property", },
+                        new Model.Field { Name=" Test Property", },
+                        new Model.Field { Name=" Test Property", },
+                        new Model.Field { Name=" Test Property", },
+                        new Model.Field { Name=" Test Property", },
+                        new Model.Field { Name=" Test Property", },
+                        new Model.Field { Name=" Test Property", },
+                        new Model.Field { Name=" Test Property", },
+                        new Model.Field { Name=" Test Property", },
+                        new Model.Field { Name=" Test Property", },
+                        new Model.Field { Name=" Test Property", },
+                        new Model.Field { Name=" Test Property", },
+                        new Model.Field { Name=" Test Property", },
                     }
                 },
-                Outputs = new Model.PropertyCollection
+                Outputs = new Model.Table
                 {
-                    Name = "B",
-                    Properties = new List<Model.Property>
+                    SystemName = "B",
+                    Fields = new List<Model.Field>
                     {
-                        new Model.Property { Name = "Name" },
-                        new Model.Property { Name = "Street" },
-                        new Model.Property { Name = "Zipcode" },
-                        new Model.Property { Name = "Country" },
-                        new Model.Property { Name = "Phone" },
-                        new Model.Property { Name = "Test Property" },
-                        new Model.Property { Name = "Test Property" },
-                        new Model.Property { Name = "Test Property" },
-                        new Model.Property { Name = "Test Property" },
-                        new Model.Property { Name = "Test Property" },
-                        new Model.Property { Name = "Test Property" },
-                        new Model.Property { Name = "Test Property" },
-                        new Model.Property { Name = "Test Property" },
-                        new Model.Property { Name = "Test Property" },
-                        new Model.Property { Name = "Test Property" },
-                        new Model.Property { Name = "Test Property" },
-                        new Model.Property { Name = "Test Property" },
-                        new Model.Property { Name = "Test Property" },
-                        new Model.Property { Name = "Test Property" },
-                        new Model.Property { Name = "Test Property" },
-                        new Model.Property { Name = "Test Property" },
-                        new Model.Property { Name = "Test Property" },
-                        new Model.Property { Name = "Test Property" },
+                        new Model.Field { Name = "Name" },
+                        new Model.Field { Name = "Street" },
+                        new Model.Field { Name = "Zipcode" },
+                        new Model.Field { Name = "Country" },
+                        new Model.Field { Name = "Phone" },
+                        new Model.Field { Name = "Test Property" },
+                        new Model.Field { Name = "Test Property" },
+                        new Model.Field { Name = "Test Property" },
+                        new Model.Field { Name = "Test Property" },
+                        new Model.Field { Name = "Test Property" },
+                        new Model.Field { Name = "Test Property" },
+                        new Model.Field { Name = "Test Property" },
+                        new Model.Field { Name = "Test Property" },
+                        new Model.Field { Name = "Test Property" },
+                        new Model.Field { Name = "Test Property" },
+                        new Model.Field { Name = "Test Property" },
+                        new Model.Field { Name = "Test Property" },
+                        new Model.Field { Name = "Test Property" },
+                        new Model.Field { Name = "Test Property" },
+                        new Model.Field { Name = "Test Property" },
+                        new Model.Field { Name = "Test Property" },
+                        new Model.Field { Name = "Test Property" },
+                        new Model.Field { Name = "Test Property" },
 
                     },
                 }
@@ -109,11 +109,11 @@ namespace dk.kalleguld.PropertyMatcher.ViewModel
 
             result.Connections = new List<Model.Connection>
             {
-                new Model.Connection(result.Inputs.Properties[0], result.Outputs.Properties[0], Model.Connection.Creator.Auto),
-                new Model.Connection(result.Inputs.Properties[1], result.Outputs.Properties[1], Model.Connection.Creator.Auto),
-                new Model.Connection(result.Inputs.Properties[1], result.Outputs.Properties[2], Model.Connection.Creator.Auto),
-                new Model.Connection(result.Inputs.Properties[1], result.Outputs.Properties[3], Model.Connection.Creator.Auto),
-                new Model.Connection(result.Inputs.Properties[2], result.Outputs.Properties[4], Model.Connection.Creator.Auto),
+                new Model.Connection(result.Inputs.Fields[0], result.Outputs.Fields[0], Model.Connection.Creator.Auto),
+                new Model.Connection(result.Inputs.Fields[1], result.Outputs.Fields[1], Model.Connection.Creator.Auto),
+                new Model.Connection(result.Inputs.Fields[1], result.Outputs.Fields[2], Model.Connection.Creator.Auto),
+                new Model.Connection(result.Inputs.Fields[1], result.Outputs.Fields[3], Model.Connection.Creator.Auto),
+                new Model.Connection(result.Inputs.Fields[2], result.Outputs.Fields[4], Model.Connection.Creator.Auto),
             };
 
             return result;
@@ -121,8 +121,8 @@ namespace dk.kalleguld.PropertyMatcher.ViewModel
 
         private class CtorData
         {
-            internal Model.PropertyCollection Inputs;
-            internal Model.PropertyCollection Outputs;
+            internal Model.Table Inputs;
+            internal Model.Table Outputs;
             internal IEnumerable<Model.Connection> Connections;
         }
     }

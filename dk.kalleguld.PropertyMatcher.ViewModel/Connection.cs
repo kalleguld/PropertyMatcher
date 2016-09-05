@@ -11,10 +11,10 @@ namespace dk.kalleguld.PropertyMatcher.ViewModel
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public Connection(Property input, Property output, Creator createdBy)
+        public Connection(Field input, Field output, Creator createdBy)
             : this(input, output, createdBy, SelectionStatus.NotSelected) { }
 
-        public Connection(Property input, Property output, Creator createdBy, SelectionStatus selectionStatus)
+        public Connection(Field input, Field output, Creator createdBy, SelectionStatus selectionStatus)
         {
             if (input == null)
                 throw new ArgumentNullException(nameof(input));
@@ -28,8 +28,8 @@ namespace dk.kalleguld.PropertyMatcher.ViewModel
             _selectionStatus = selectionStatus;
         }
 
-        public Property Input { get; }
-        public Property Output { get; }
+        public Field Input { get; }
+        public Field Output { get; }
 
         public Creator CreatedBy { get; }
 

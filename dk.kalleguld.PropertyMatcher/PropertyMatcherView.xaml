@@ -36,14 +36,22 @@
                     Panel.ZIndex="1"/>
 
 
-            <TextBlock Text="{Binding InputsName}" HorizontalAlignment="Center"/>
+            <TextBlock HorizontalAlignment="Center">
+                <TextBlock.Text>
+                    <MultiBinding StringFormat="{}{0} ({1})">
+                        <Binding Path="InputTable.TableName"/>
+                        <Binding Path="InputTable.SystemName"/>
+                    </MultiBinding>
+                </TextBlock.Text>
+            </TextBlock>
             <DataGrid Grid.Row="1" 
                       x:Name="InputsGrid"
-                      ItemsSource="{Binding Inputs}"
+                      ItemsSource="{Binding InputFields}"
                       VirtualizingStackPanel.IsVirtualizing="False"
                       SelectionMode="Single"
                       SelectionUnit="FullRow"
                       SelectionChanged="Properties_SelectionChanged"
+                      LostFocus="PropertyGrid_LostFocus"
                       AutoGenerateColumns="False"
                       CanUserAddRows="False"
                       CanUserDeleteRows="False"
@@ -58,12 +66,12 @@
                     <DataGridTemplateColumn>
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <local:PropertyGrid 
+                                <local:FieldGrid 
                                     HorizontalAlignment="Stretch" 
                                     PreviewMouseLeftButtonDown="LeftGrid_PreviewMouseLeftButtonDown"
-                                    Property="{Binding .}">
+                                    Field="{Binding .}">
                                     <TextBlock Text="{Binding Name}" HorizontalAlignment="Right" Padding="5 0" />
-                                </local:PropertyGrid>
+                                </local:FieldGrid>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
@@ -71,14 +79,23 @@
             </DataGrid>
 
 
+            <TextBlock HorizontalAlignment="Center" Grid.Column="2">
+                <TextBlock.Text>
+                    <MultiBinding StringFormat="{}{0} ({1})">
+                        <Binding Path="OutputTable.TableName"/>
+                        <Binding Path="OutputTable.SystemName"/>
+                    </MultiBinding>
+                </TextBlock.Text>
+            </TextBlock>
             <DataGrid Grid.Row="1" Grid.Column="2" 
                       x:Name="OutputsGrid"
-                      ItemsSource="{Binding Outputs}"
+                      ItemsSource="{Binding OutputFields}"
                       VirtualizingStackPanel.IsVirtualizing="False"
                       AutoGenerateColumns="False"
                       SelectionMode="Single"
                       SelectionUnit="FullRow"
                       SelectionChanged="Properties_SelectionChanged"
+                      LostFocus="PropertyGrid_LostFocus"
                       CanUserAddRows="False"
                       CanUserDeleteRows="False"
                       CanUserResizeRows="False"
@@ -90,16 +107,16 @@
                       ScrollViewer.HorizontalScrollBarVisibility="Hidden">
 
                 <DataGrid.Columns>
-                    <DataGridTemplateColumn Header="{Binding OutputsName}">
+                    <DataGridTemplateColumn>
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <local:PropertyGrid HorizontalAlignment="Stretch"
-                                        Property="{Binding .}"
+                                <local:FieldGrid HorizontalAlignment="Stretch"
+                                        Field="{Binding .}"
                                         DragEnter="RightGrid_DragEnter"
                                         Drop="RightGrid_Drop"
                                         AllowDrop="True">
                                     <TextBlock Text="{Binding Name}" HorizontalAlignment="Left" Padding="5 0"/>
-                                </local:PropertyGrid>
+                                </local:FieldGrid>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
