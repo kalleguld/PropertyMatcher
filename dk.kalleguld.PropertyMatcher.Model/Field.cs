@@ -12,7 +12,7 @@ namespace dk.kalleguld.PropertyMatcher.Model
         public string Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
-        public string Samplee { get; set; }
+        public string Sample { get; set; }
         public bool? IsMandatory { get; set; }
         public string Attribute { get; set; }
         public string Reference { get; set; }

@@ -30,17 +30,39 @@ namespace dk.kalleguld.PropertyMatcher.ViewModel
             Model.Table outputs,
             IEnumerable<Model.Connection> connections)
         {
-            InputFields = GetViewModelFields(inputs);
-            OutputFields = GetViewModelFields(outputs);
+            InputFields = GetViewModelFields(inputs, this);
+            OutputFields = GetViewModelFields(outputs, this);
             Connections = GetViewModelConnections(connections, InputFields, OutputFields);
+
+            foreach (var conn in Connections)
+            {
+                conn.Input.IsConnected = true;
+                conn.Output.IsConnected = true;
+            }
 
             InputTable = new Table(inputs);
             OutputTable = new Table(outputs);
 
         }
 
-        public void AddConnection(Field input, Field output, Connection.Creator createdBy)
+        public void AddConnection(Field a, Field b, Connection.Creator createdBy)
         {
+            Field input, output;
+            if (InputFields.Contains(a) && OutputFields.Contains(b))
+            {
+                input = a;
+                output = b;
+            }
+            else if (InputFields.Contains(b) && OutputFields.Contains(a))
+            {
+                input = b;
+                output = a;
+            }
+            else
+            {
+                return;
+            }
+
             // Remove any existing connections to a newly connected output.
             // There should never be more than one input connected to any given output
             var conflictingConnections = Connections.Where(conn => conn.Output == output).ToList();
@@ -60,11 +82,20 @@ namespace dk.kalleguld.PropertyMatcher.ViewModel
             }
 
             Connections.Add(new Connection(input, output, createdBy, selectionStatus));
+            input.IsConnected = true;
+            output.IsConnected = true;
         }
 
         public void RemoveConnection(Connection connection)
         {
             Connections.Remove(connection);
+            UpdateIsConnected(connection.Input);
+            UpdateIsConnected(connection.Output);
+        }
+
+        private void UpdateIsConnected(Field field)
+        {
+            field.IsConnected = (Connections.Any(conn => conn.Input == field || conn.Output == field));
         }
 
         private static ObservableCollection<Connection> GetViewModelConnections(
@@ -90,9 +121,9 @@ namespace dk.kalleguld.PropertyMatcher.ViewModel
             return result;
         }
 
-        private static ObservableCollection<ViewModel.Field> GetViewModelFields(Model.Table inputCollection)
+        private static ObservableCollection<ViewModel.Field> GetViewModelFields(Model.Table inputCollection, PropertyMatcherViewModel viewModel)
         {
-            var inputEnumerable = inputCollection.Fields.Select(p => new ViewModel.Field(p));
+            var inputEnumerable = inputCollection.Fields.Select(p => new ViewModel.Field(p, viewModel));
             return new ObservableCollection<Field>(inputEnumerable);
         }
 
@@ -107,6 +138,11 @@ namespace dk.kalleguld.PropertyMatcher.ViewModel
             }
         }
 
+        public bool IsConnectable(Field a, Field b)
+        {
+            return (InputFields.Contains(a) && OutputFields.Contains(b)) 
+                || (InputFields.Contains(b) && OutputFields.Contains(a));
+        }
 
         private void SetSelection(List<ISelectable> selection)
         {
@@ -163,7 +199,7 @@ namespace dk.kalleguld.PropertyMatcher.ViewModel
             }
         }
 
-        private void Disconnect(Field field)
+        public void Disconnect(Field field)
         {
             var droppedConnections = Connections
                 .Where(c => c.Input == field 

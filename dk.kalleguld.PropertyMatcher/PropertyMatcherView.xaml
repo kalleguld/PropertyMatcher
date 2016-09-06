@@ -4,9 +4,10 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:dk.kalleguld.PropertyMatcher.View"
+             xmlns:localConverter="clr-namespace:dk.kalleguld.PropertyMatcher.View.Converters"
              xmlns:vm="clr-namespace:dk.kalleguld.PropertyMatcher.ViewModel;assembly=dk.kalleguld.PropertyMatcher.ViewModel"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300" 
+             d:DesignHeight="2000" d:DesignWidth="1100" 
              d:DataContext="{d:DesignInstance Type={x:Type vm:DesignTimeViewModel}, IsDesignTimeCreatable=True}"
              DataContextChanged="UserControl_DataContextChanged"
              SizeChanged="UserControl_SizeChanged"
@@ -14,13 +15,77 @@
              >
 
     <UserControl.Resources>
+
+        <localConverter:GridZeroHeightConverter x:Key="GridZeroHeightConverter"/>
+
+        <Style TargetType="Run" x:Key="FieldDescriptorStyle">
+            <Setter Property="Foreground" Value="DarkGray"/>
+        </Style>
+        <Style TargetType="TextBlock" x:Key="FieldValueStyle">
+            <Setter Property="TextWrapping" Value="Wrap"/>
+        </Style>
+        <Style TargetType="TextBlock" x:Key="FieldValueNameStyle" BasedOn="{StaticResource FieldValueStyle}">
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+        </Style>
+        <Style TargetType="ListView" x:Key="FieldListStyle">
+            <Setter Property="VirtualizingPanel.IsVirtualizing" Value="False"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="BorderThickness" Value="0"/>
+        </Style>
+
+        <DataTemplate x:Key="FieldDataTemplate" DataType="{x:Type vm:Field}">
+            <Border BorderBrush="Black" 
+                    BorderThickness="1 1 1 0" HorizontalAlignment="Stretch">
+                <Grid Margin="5 0"
+                      Background="Transparent"
+                      PreviewMouseLeftButtonDown="LeftGrid_PreviewMouseLeftButtonDown"
+                      AllowDrop="True"
+                      MaxWidth="500"
+                      DragEnter="FieldGrid_DragEnter"
+                      Drop="RightGrid_Drop">
+
+                    <Grid.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Disconnect" 
+                                      Command="{Binding Disconnect}"/>
+                        </ContextMenu>
+                    </Grid.ContextMenu>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition 
+                            Height="{Binding Description, Converter={StaticResource GridZeroHeightConverter}}"/>
+                        <RowDefinition 
+                            Height="{Binding Sample, Converter={StaticResource GridZeroHeightConverter}}"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0" Style="{StaticResource FieldValueNameStyle}" Text="{Binding Name}">
+                    </TextBlock>
+
+                    <TextBlock Grid.Row="1" Style="{StaticResource FieldValueStyle}">
+                        <Run Text="Description: "  Style="{StaticResource FieldDescriptorStyle}"/>
+                        <Run Text="{Binding Description, Mode=OneTime}"/>
+                    </TextBlock>
+                    <TextBlock Grid.Row="2" Style="{StaticResource FieldValueStyle}">
+                        <Run Text="Sample: " Style="{StaticResource FieldDescriptorStyle}"/>
+                        <Run Text="{Binding Sample, Mode=OneTime}"/>
+                    </TextBlock>
+                </Grid>
+            </Border>
+        </DataTemplate>
+
     </UserControl.Resources>
     <ScrollViewer local:DragDropHelper.VerticalScrollOnDragging="True">
         <Grid x:Name="MainGrid" 
-              PreviewMouseMove="MainGrid_PreviewMouseMove">
+              PreviewMouseMove="MainGrid_PreviewMouseMove"
+              Background="Transparent">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition/>
+                <ColumnDefinition MinWidth="50"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
@@ -44,40 +109,26 @@
                     </MultiBinding>
                 </TextBlock.Text>
             </TextBlock>
-            <DataGrid Grid.Row="1" 
+
+            <ListView Grid.Row="1" 
                       x:Name="InputsGrid"
                       ItemsSource="{Binding InputFields}"
-                      VirtualizingStackPanel.IsVirtualizing="False"
-                      SelectionMode="Single"
-                      SelectionUnit="FullRow"
+                      Style="{StaticResource FieldListStyle}"
+                      ItemTemplate="{StaticResource FieldDataTemplate}"
                       SelectionChanged="Properties_SelectionChanged"
-                      LostFocus="PropertyGrid_LostFocus"
-                      AutoGenerateColumns="False"
-                      CanUserAddRows="False"
-                      CanUserDeleteRows="False"
-                      CanUserReorderColumns="False"
-                      CanUserResizeColumns="False"
-                      CanUserSortColumns="False"
-                      ScrollViewer.CanContentScroll="False"
-                      ScrollViewer.VerticalScrollBarVisibility="Hidden"
-                      ScrollViewer.HorizontalScrollBarVisibility="Hidden">
-
-                <DataGrid.Columns>
-                    <DataGridTemplateColumn>
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <local:FieldGrid 
-                                    HorizontalAlignment="Stretch" 
-                                    PreviewMouseLeftButtonDown="LeftGrid_PreviewMouseLeftButtonDown"
-                                    Field="{Binding .}">
-                                    <TextBlock Text="{Binding Name}" HorizontalAlignment="Right" Padding="5 0" />
-                                </local:FieldGrid>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-                </DataGrid.Columns>
-            </DataGrid>
-
+                      LostFocus="FieldList_LostFocus">
+                <ListView.Template>
+                    <ControlTemplate>
+                        <ItemsPresenter/>
+                    </ControlTemplate>
+                </ListView.Template>
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="ListViewItem">
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                    </Style>
+                </ListView.ItemContainerStyle>
+            </ListView>
+            
 
             <TextBlock HorizontalAlignment="Center" Grid.Column="2">
                 <TextBlock.Text>
@@ -87,6 +138,22 @@
                     </MultiBinding>
                 </TextBlock.Text>
             </TextBlock>
+
+            <ListView Grid.Row="1" Grid.Column="2" 
+                      x:Name="OutputsGrid"
+                      ItemsSource="{Binding OutputFields}"
+                      Style="{StaticResource FieldListStyle}"
+                      ItemTemplate="{StaticResource FieldDataTemplate}"
+                      SelectionChanged="Properties_SelectionChanged"
+                      LostFocus="FieldList_LostFocus">
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="ListViewItem">
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                    </Style>
+                </ListView.ItemContainerStyle>
+            </ListView>
+
+            <!--
             <DataGrid Grid.Row="1" Grid.Column="2" 
                       x:Name="OutputsGrid"
                       ItemsSource="{Binding OutputFields}"
@@ -110,19 +177,18 @@
                     <DataGridTemplateColumn>
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <local:FieldGrid HorizontalAlignment="Stretch"
-                                        Field="{Binding .}"
+                                <Grid HorizontalAlignment="Stretch"
                                         DragEnter="RightGrid_DragEnter"
                                         Drop="RightGrid_Drop"
                                         AllowDrop="True">
                                     <TextBlock Text="{Binding Name}" HorizontalAlignment="Left" Padding="5 0"/>
-                                </local:FieldGrid>
+                                </Grid>
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
                 </DataGrid.Columns>
             </DataGrid>
-
+            -->
             <Button Click="Button_Click" Grid.Row="0" Grid.Column="1" />
         </Grid>
     </ScrollViewer>

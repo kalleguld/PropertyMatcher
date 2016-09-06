@@ -112,7 +112,7 @@ namespace dk.kalleguld.PropertyMatcher.View
             ClearAllPaths();
             for (int i = 0; i < OutputsGrid.Items.Count; i++)
             {
-                DataGridRow row = (DataGridRow)OutputsGrid.ItemContainerGenerator
+                var row = (FrameworkElement)OutputsGrid.ItemContainerGenerator
                         .ContainerFromIndex(i);
                 AddPath(row);
             }
@@ -133,7 +133,7 @@ namespace dk.kalleguld.PropertyMatcher.View
         {
             for (int i = 0; i < OutputsGrid.Items.Count; i++)
             {
-                DataGridRow row = (DataGridRow)OutputsGrid.ItemContainerGenerator
+                FrameworkElement row = (FrameworkElement)OutputsGrid.ItemContainerGenerator
                         .ContainerFromIndex(i);
                 var rowProperty = row.DataContext as ViewModel.Field;
                 if (rowProperty == connection.Output)
@@ -144,9 +144,9 @@ namespace dk.kalleguld.PropertyMatcher.View
             }
         }
 
-        private void AddPath(DataGridRow outputRow)
+        private void AddPath(FrameworkElement outputElement)
         {
-            var outputProperty = outputRow.DataContext as ViewModel.Field;
+            var outputProperty = outputElement.DataContext as ViewModel.Field;
             outputProperty.PropertyChanged += OutputProperty_PropertyChanged;
 
             var connection = ViewModel?.Connections.FirstOrDefault(conn => conn.Output == outputProperty);
@@ -156,7 +156,7 @@ namespace dk.kalleguld.PropertyMatcher.View
 
             var inputRow = GetInputRow(connection.Input);
 
-            Path path = GetConnectingPath(inputRow, outputRow, MainGrid, connection);
+            Path path = GetConnectingPath(inputRow, outputElement, MainGrid, connection);
 
             ConnectorCanvas.Children.Add(path);
             ConnectionPaths.Add(outputProperty, path);
@@ -221,9 +221,10 @@ namespace dk.kalleguld.PropertyMatcher.View
             }
         }
 
-        private DataGridRow GetInputRow(Field inputProperty)
+        private ListBoxItem GetInputRow(Field inputProperty)
         {
-            return (DataGridRow)InputsGrid.ItemContainerGenerator.ContainerFromItem(inputProperty);
+            var container = InputsGrid.ItemContainerGenerator.ContainerFromItem(inputProperty);
+            return (ListBoxItem)container;
         }
 
 
@@ -307,30 +308,49 @@ namespace dk.kalleguld.PropertyMatcher.View
         private void LeftGrid_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             _mouseDragStart = e.GetPosition(null);
-            _draggingInputProperty = (sender as FieldGrid)?.Field;
+            _draggingInputProperty = ((sender as FrameworkElement)?.DataContext) as Field;
 
         }
 
-        private void RightGrid_DragEnter(object sender, DragEventArgs e)
+        private void FieldGrid_DragEnter(object sender, DragEventArgs e)
         {
+            DragDropEffects effect;
             if (!e.Data.GetDataPresent(DataFormatName))
             {
-                e.Effects = DragDropEffects.None;
+                effect = DragDropEffects.None;
             }
             else
             {
-                e.Effects = DragDropEffects.Link;
+
+                var draggedField = e.Data.GetData(DataFormatName) as Field;
+                var dropTarget = ((sender as FrameworkElement)?.DataContext) as Field;
+
+                if (draggedField == null || dropTarget == null)
+                {
+                    effect = DragDropEffects.None;
+                }
+                else if (ViewModel.IsConnectable(draggedField, dropTarget))
+                {
+                    effect = DragDropEffects.Link;
+                }
+                else
+                {
+                    effect = DragDropEffects.None;
+                }
             }
+            e.Effects = effect;
         }
 
         private void RightGrid_Drop(object sender, DragEventArgs e)
         {
             if (e.Data.GetDataPresent(DataFormatName))
             {
-                var outputPropertyGrid = (FieldGrid)sender;
-                var inputProperty = (Field)e.Data.GetData(DataFormatName);
-                var outputProperty = outputPropertyGrid.Field;
-                ViewModel?.AddConnection(inputProperty, outputProperty,  Connection.Creator.User);
+                var draggedField = e.Data.GetData(DataFormatName) as Field;
+                var dropTarget = sender as Field;
+                var outputPropertyElement = (FrameworkElement)sender;
+                var inputField = (Field)e.Data.GetData(DataFormatName);
+                var outputField = outputPropertyElement.DataContext as Field;
+                ViewModel?.AddConnection(inputField, outputField,  Connection.Creator.User);
             }
         }
 
@@ -370,9 +390,9 @@ namespace dk.kalleguld.PropertyMatcher.View
             AddPath(connection);
         }
 
-        private void PropertyGrid_LostFocus(object sender, RoutedEventArgs e)
+        private void FieldList_LostFocus(object sender, RoutedEventArgs e)
         {
-            var grid = (DataGrid)sender;
+            var grid = (System.Windows.Controls.Primitives.Selector)sender;
             grid.SelectedItem = null;
         }
     }
