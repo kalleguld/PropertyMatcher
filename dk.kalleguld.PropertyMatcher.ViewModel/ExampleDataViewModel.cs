@@ -966,7 +966,7 @@ If you have selected the Person option, when you create a new sales quote and ch
     SystemTableId = "3T1",
     Id = "T1F002",
     Name = "ROWNUMBER",
-    IsMandatory = false,
+    IsMandatory = true,
     Sample = "26576",
     Attribute = "SYSTEM, STORE",
   },
@@ -1694,11 +1694,11 @@ If you have selected the Person option, when you create a new sales quote and ch
 
             result.Connections = new List<Model.Connection>
             {
-                new Model.Connection(result.Inputs.Fields[0], result.Outputs.Fields[0], Model.Connection.Creator.Auto),
+                new Model.Connection(result.Inputs.Fields[0], result.Outputs.Fields[2], Model.Connection.Creator.Auto),
                 new Model.Connection(result.Inputs.Fields[1], result.Outputs.Fields[1], Model.Connection.Creator.Auto),
-                new Model.Connection(result.Inputs.Fields[1], result.Outputs.Fields[2], Model.Connection.Creator.Auto),
-                new Model.Connection(result.Inputs.Fields[1], result.Outputs.Fields[3], Model.Connection.Creator.Auto),
-                new Model.Connection(result.Inputs.Fields[2], result.Outputs.Fields[4], Model.Connection.Creator.Auto),
+                new Model.Connection(result.Inputs.Fields[2], result.Outputs.Fields[5], Model.Connection.Creator.Auto),
+                new Model.Connection(result.Inputs.Fields[5], result.Outputs.Fields[6], Model.Connection.Creator.Auto),
+                new Model.Connection(result.Inputs.Fields[7], result.Outputs.Fields[8], Model.Connection.Creator.Auto),
             };
 
             return result;

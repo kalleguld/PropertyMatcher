@@ -11,29 +11,6 @@ namespace dk.kalleguld.PropertyMatcher.ViewModel
     public class Field : INotifyPropertyChanged, ISelectable
     {
         public event PropertyChangedEventHandler PropertyChanged;
-
-        internal Model.Field ModelField { get; }
-        private readonly PropertyMatcherViewModel ViewModel;
-
-        public Field(Model.Field modelField, PropertyMatcherViewModel viewModel)
-        {
-            ModelField = modelField;
-            ViewModel = viewModel;
-
-            _selectionStatus = SelectionStatus.NotSelected;
-            Disconnect = new DisconnectCommand(this);
-        }
-
-        public string Name { get { return ModelField.Name; } }
-        public string SystemTableId { get { return ModelField.SystemTableId; } }
-        public string Id { get { return ModelField.Id; } }
-        public string Description { get { return ModelField.Description; } }
-        public string Sample { get { return ModelField.Sample; } }
-        public bool? IsMandatory { get { return ModelField.IsMandatory; } }
-        public string Attribute { get { return ModelField.Attribute; } }
-        public string Reference { get { return ModelField.Reference; } }
-
-        private SelectionStatus _selectionStatus;
         public SelectionStatus SelectionStatus
         {
             get { return _selectionStatus; }
@@ -43,10 +20,6 @@ namespace dk.kalleguld.PropertyMatcher.ViewModel
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SelectionStatus)));
             }
         }
-
-        public ICommand Disconnect { get; }
-
-        private bool _isConnected;
         public bool IsConnected
         {
             get { return _isConnected; }
@@ -56,6 +29,42 @@ namespace dk.kalleguld.PropertyMatcher.ViewModel
                 ((DisconnectCommand)Disconnect).isConnectedChanged();
             }
         }
+        public ICommand Disconnect { get; }
+        public ConnectionDirection Direction { get; }
+        #region model properties
+        public string Name { get { return ModelField.Name?.Trim(); } }
+        public string SystemTableId { get { return ModelField.SystemTableId?.Trim(); } }
+        public string Id { get { return ModelField.Id?.Trim(); } }
+        public string Description { get { return ModelField.Description?.Trim(); } }
+        public string Sample { get { return ModelField.Sample?.Trim(); } }
+        public string Attribute { get { return ModelField.Attribute?.Trim(); } }
+        public string Reference { get { return ModelField.Reference?.Trim(); } }
+        public bool? IsMandatory { get { return ModelField.IsMandatory; } }
+        #endregion
+
+
+        private readonly PropertyMatcherViewModel ViewModel;
+        internal readonly Model.Field ModelField;
+
+        private SelectionStatus _selectionStatus;
+        private bool _isConnected;
+
+        internal Field(Model.Field modelField, PropertyMatcherViewModel viewModel, ConnectionDirection direction)
+        {
+            ModelField = modelField;
+            ViewModel = viewModel;
+            Direction = direction;
+
+            _selectionStatus = SelectionStatus.NotSelected;
+            Disconnect = new DisconnectCommand(this);
+        }
+
+
+
+
+
+
+        public enum ConnectionDirection { Input, Output, }
 
         private class DisconnectCommand : ICommand
         {

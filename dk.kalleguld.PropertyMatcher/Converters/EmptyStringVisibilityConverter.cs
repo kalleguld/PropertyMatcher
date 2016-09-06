@@ -9,18 +9,18 @@ using System.Windows.Data;
 
 namespace dk.kalleguld.PropertyMatcher.View.Converters
 {
-    [ValueConversion(typeof(object), typeof(GridLength))]
-    internal class GridZeroHeightConverter : IValueConverter
+    [ValueConversion(typeof(object), typeof(System.Windows.Visibility))]
+    class EmptyStringVisibilityConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (string.IsNullOrWhiteSpace(value?.ToString()))
             {
-                return new GridLength(0);
+                return Visibility.Collapsed;
             }
             else
             {
-                return new GridLength(1, GridUnitType.Star);
+                return Visibility.Visible;
             }
         }
 

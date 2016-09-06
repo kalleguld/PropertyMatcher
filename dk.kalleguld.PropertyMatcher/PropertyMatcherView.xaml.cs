@@ -305,7 +305,7 @@ namespace dk.kalleguld.PropertyMatcher.View
 
         }
 
-        private void LeftGrid_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        private void FieldGrid_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             _mouseDragStart = e.GetPosition(null);
             _draggingInputProperty = ((sender as FrameworkElement)?.DataContext) as Field;
@@ -341,16 +341,14 @@ namespace dk.kalleguld.PropertyMatcher.View
             e.Effects = effect;
         }
 
-        private void RightGrid_Drop(object sender, DragEventArgs e)
+        private void FieldGrid_Drop(object sender, DragEventArgs e)
         {
             if (e.Data.GetDataPresent(DataFormatName))
             {
                 var draggedField = e.Data.GetData(DataFormatName) as Field;
-                var dropTarget = sender as Field;
-                var outputPropertyElement = (FrameworkElement)sender;
-                var inputField = (Field)e.Data.GetData(DataFormatName);
-                var outputField = outputPropertyElement.DataContext as Field;
-                ViewModel?.AddConnection(inputField, outputField,  Connection.Creator.User);
+                var dropTarget = sender as FrameworkElement;
+                var dropField = dropTarget?.DataContext as Field;
+                ViewModel?.AddConnection(draggedField, dropField,  Connection.Creator.User);
             }
         }
 

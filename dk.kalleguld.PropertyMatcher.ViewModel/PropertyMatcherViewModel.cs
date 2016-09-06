@@ -23,6 +23,17 @@ namespace dk.kalleguld.PropertyMatcher.ViewModel
         /// </summary>
         public ObservableCollection<ViewModel.Connection> Connections { get; }
 
+        public IEnumerable<ISelectable> Selection
+        {
+            get { return _selection; }
+            set
+            {
+                _selection = value;
+                SetSelection(value.ToList());
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Selection)));
+            }
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         public PropertyMatcherViewModel(
@@ -30,8 +41,8 @@ namespace dk.kalleguld.PropertyMatcher.ViewModel
             Model.Table outputs,
             IEnumerable<Model.Connection> connections)
         {
-            InputFields = GetViewModelFields(inputs, this);
-            OutputFields = GetViewModelFields(outputs, this);
+            InputFields = GetViewModelFields(inputs, this, Field.ConnectionDirection.Input);
+            OutputFields = GetViewModelFields(outputs, this, Field.ConnectionDirection.Output);
             Connections = GetViewModelConnections(connections, InputFields, OutputFields);
 
             foreach (var conn in Connections)
@@ -47,6 +58,7 @@ namespace dk.kalleguld.PropertyMatcher.ViewModel
 
         public void AddConnection(Field a, Field b, Connection.Creator createdBy)
         {
+            //Find out which is the input field and which is the output field
             Field input, output;
             if (InputFields.Contains(a) && OutputFields.Contains(b))
             {
@@ -60,6 +72,7 @@ namespace dk.kalleguld.PropertyMatcher.ViewModel
             }
             else
             {
+                //Only connect inputs with outputs
                 return;
             }
 
@@ -93,6 +106,25 @@ namespace dk.kalleguld.PropertyMatcher.ViewModel
             UpdateIsConnected(connection.Output);
         }
 
+        public void Disconnect(Field field)
+        {
+            var droppedConnections = Connections
+                .Where(c => c.Input == field
+                         || c.Output == field)
+                .ToList();
+            foreach (var conn in droppedConnections)
+            {
+                RemoveConnection(conn);
+            }
+        }
+
+        public bool IsConnectable(Field a, Field b)
+        {
+            return a != null && b != null && 
+                ((InputFields.Contains(a) && OutputFields.Contains(b))
+                    || (InputFields.Contains(b) && OutputFields.Contains(a)));
+        }
+
         private void UpdateIsConnected(Field field)
         {
             field.IsConnected = (Connections.Any(conn => conn.Input == field || conn.Output == field));
@@ -121,29 +153,17 @@ namespace dk.kalleguld.PropertyMatcher.ViewModel
             return result;
         }
 
-        private static ObservableCollection<ViewModel.Field> GetViewModelFields(Model.Table inputCollection, PropertyMatcherViewModel viewModel)
+        private static ObservableCollection<ViewModel.Field> GetViewModelFields(
+            Model.Table fieldCollection, 
+            PropertyMatcherViewModel viewModel, 
+            Field.ConnectionDirection direction)
         {
-            var inputEnumerable = inputCollection.Fields.Select(p => new ViewModel.Field(p, viewModel));
-            return new ObservableCollection<Field>(inputEnumerable);
+            var fieldEnumerable = fieldCollection.Fields.Select(p => new Field(p, viewModel, direction));
+            return new ObservableCollection<Field>(fieldEnumerable);
         }
 
         private IEnumerable<ISelectable> _selection = Enumerable.Empty<ISelectable>();
-        public IEnumerable<ISelectable> Selection
-        {
-            get { return _selection; }
-            set
-            {
-                _selection = value;
-                SetSelection(value.ToList());
-            }
-        }
-
-        public bool IsConnectable(Field a, Field b)
-        {
-            return (InputFields.Contains(a) && OutputFields.Contains(b)) 
-                || (InputFields.Contains(b) && OutputFields.Contains(a));
-        }
-
+        
         private void SetSelection(List<ISelectable> selection)
         {
             if (selection == null)
@@ -199,16 +219,6 @@ namespace dk.kalleguld.PropertyMatcher.ViewModel
             }
         }
 
-        public void Disconnect(Field field)
-        {
-            var droppedConnections = Connections
-                .Where(c => c.Input == field 
-                         || c.Output == field)
-                .ToList();
-            foreach (var conn in droppedConnections)
-            {
-                RemoveConnection(conn);
-            }
-        }
+        
     }
 }

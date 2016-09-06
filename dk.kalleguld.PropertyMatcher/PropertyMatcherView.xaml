@@ -7,8 +7,8 @@
              xmlns:localConverter="clr-namespace:dk.kalleguld.PropertyMatcher.View.Converters"
              xmlns:vm="clr-namespace:dk.kalleguld.PropertyMatcher.ViewModel;assembly=dk.kalleguld.PropertyMatcher.ViewModel"
              mc:Ignorable="d" 
-             d:DesignHeight="2000" d:DesignWidth="1100" 
-             d:DataContext="{d:DesignInstance Type={x:Type vm:DesignTimeViewModel}, IsDesignTimeCreatable=True}"
+             d:DesignHeight="2000" d:DesignWidth="700" 
+             d:DataContext="{d:DesignInstance Type={x:Type vm:ExampleDataViewModel}, IsDesignTimeCreatable=True}"
              DataContextChanged="UserControl_DataContextChanged"
              SizeChanged="UserControl_SizeChanged"
              Loaded="UserControl_Loaded"
@@ -17,6 +17,8 @@
     <UserControl.Resources>
 
         <localConverter:GridZeroHeightConverter x:Key="GridZeroHeightConverter"/>
+        <localConverter:EmptyStringVisibilityConverter x:Key="EmptyStringVisibilityConverter"/>
+        <BooleanToVisibilityConverter x:Key="BoolToVisConverter"/>
 
         <Style TargetType="Run" x:Key="FieldDescriptorStyle">
             <Setter Property="Foreground" Value="DarkGray"/>
@@ -37,49 +39,46 @@
 
         <DataTemplate x:Key="FieldDataTemplate" DataType="{x:Type vm:Field}">
             <Border BorderBrush="Black" 
-                    BorderThickness="1 1 1 0" HorizontalAlignment="Stretch">
-                <Grid Margin="5 0"
-                      Background="Transparent"
-                      PreviewMouseLeftButtonDown="LeftGrid_PreviewMouseLeftButtonDown"
-                      AllowDrop="True"
-                      MaxWidth="500"
-                      DragEnter="FieldGrid_DragEnter"
-                      Drop="RightGrid_Drop">
-
-                    <Grid.ContextMenu>
+                    BorderThickness="1 1 1 0">
+                <StackPanel Background="Transparent"
+                            Width="300"
+                            Margin="5 0"
+                            PreviewMouseLeftButtonDown="FieldGrid_PreviewMouseLeftButtonDown"
+                            AllowDrop="True"
+                            DragEnter="FieldGrid_DragEnter"
+                            Drop="FieldGrid_Drop">
+                    <StackPanel.ContextMenu>
                         <ContextMenu>
                             <MenuItem Header="Disconnect" 
                                       Command="{Binding Disconnect}"/>
                         </ContextMenu>
-                    </Grid.ContextMenu>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition/>
-                        <RowDefinition 
-                            Height="{Binding Description, Converter={StaticResource GridZeroHeightConverter}}"/>
-                        <RowDefinition 
-                            Height="{Binding Sample, Converter={StaticResource GridZeroHeightConverter}}"/>
-                    </Grid.RowDefinitions>
+                    </StackPanel.ContextMenu>
 
-                    <TextBlock Grid.Row="0" Style="{StaticResource FieldValueNameStyle}" Text="{Binding Name}">
-                    </TextBlock>
+                    <TextBlock Text="{Binding Name}" Style="{StaticResource FieldValueNameStyle}" HorizontalAlignment="Center"/>
 
-                    <TextBlock Grid.Row="1" Style="{StaticResource FieldValueStyle}">
-                        <Run Text="Description: "  Style="{StaticResource FieldDescriptorStyle}"/>
+                    <TextBlock Style="{StaticResource FieldValueStyle}" 
+                               Visibility="{Binding Description, Converter={StaticResource EmptyStringVisibilityConverter}}">
+                        <Run Text="Description:" Style="{StaticResource FieldDescriptorStyle}"/>
                         <Run Text="{Binding Description, Mode=OneTime}"/>
                     </TextBlock>
-                    <TextBlock Grid.Row="2" Style="{StaticResource FieldValueStyle}">
-                        <Run Text="Sample: " Style="{StaticResource FieldDescriptorStyle}"/>
+                    <TextBlock Style="{StaticResource FieldValueStyle}" 
+                               Visibility="{Binding Sample, Converter={StaticResource EmptyStringVisibilityConverter}}">
+                        <Run Text="Sample:" Style="{StaticResource FieldDescriptorStyle}"/>
                         <Run Text="{Binding Sample, Mode=OneTime}"/>
                     </TextBlock>
-                </Grid>
+
+                    <TextBlock Visibility="{Binding IsMandatory, Converter={StaticResource BoolToVisConverter}}">
+                        <Run Style="{StaticResource FieldDescriptorStyle}"
+                             Text="This field is mandatory"/>
+                    </TextBlock>
+                </StackPanel>
             </Border>
         </DataTemplate>
-
     </UserControl.Resources>
-    <ScrollViewer local:DragDropHelper.VerticalScrollOnDragging="True">
+    
+    
+    
+    <ScrollViewer local:DragDropHelper.VerticalScrollOnDragging="True" SizeChanged="UserControl_SizeChanged">
         <Grid x:Name="MainGrid" 
               PreviewMouseMove="MainGrid_PreviewMouseMove"
               Background="Transparent">
@@ -115,20 +114,22 @@
                       ItemsSource="{Binding InputFields}"
                       Style="{StaticResource FieldListStyle}"
                       ItemTemplate="{StaticResource FieldDataTemplate}"
+                      SizeChanged="UserControl_SizeChanged"
                       SelectionChanged="Properties_SelectionChanged"
                       LostFocus="FieldList_LostFocus">
                 <ListView.Template>
+                    <!-- Custom template without a ScrollViewer. The outer scrollViewer is used instead -->
                     <ControlTemplate>
                         <ItemsPresenter/>
                     </ControlTemplate>
                 </ListView.Template>
-                <ListView.ItemContainerStyle>
-                    <Style TargetType="ListViewItem">
-                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                <ListView.Resources>
+                    <Style TargetType="TextBlock" x:Key="FieldValueNameStyle" BasedOn="{StaticResource FieldValueStyle}">
+                        <Setter Property="HorizontalAlignment" Value="Right"/>
                     </Style>
-                </ListView.ItemContainerStyle>
+                </ListView.Resources>
             </ListView>
-            
+
 
             <TextBlock HorizontalAlignment="Center" Grid.Column="2">
                 <TextBlock.Text>
@@ -146,49 +147,14 @@
                       ItemTemplate="{StaticResource FieldDataTemplate}"
                       SelectionChanged="Properties_SelectionChanged"
                       LostFocus="FieldList_LostFocus">
-                <ListView.ItemContainerStyle>
-                    <Style TargetType="ListViewItem">
-                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                    </Style>
-                </ListView.ItemContainerStyle>
+                <ListView.Template>
+                    <!-- Custom template without a ScrollViewer. The outer scrollViewer is used instead -->
+                    <ControlTemplate>
+                        <ItemsPresenter/>
+                    </ControlTemplate>
+                </ListView.Template>
             </ListView>
 
-            <!--
-            <DataGrid Grid.Row="1" Grid.Column="2" 
-                      x:Name="OutputsGrid"
-                      ItemsSource="{Binding OutputFields}"
-                      VirtualizingStackPanel.IsVirtualizing="False"
-                      AutoGenerateColumns="False"
-                      SelectionMode="Single"
-                      SelectionUnit="FullRow"
-                      SelectionChanged="Properties_SelectionChanged"
-                      LostFocus="PropertyGrid_LostFocus"
-                      CanUserAddRows="False"
-                      CanUserDeleteRows="False"
-                      CanUserResizeRows="False"
-                      CanUserReorderColumns="False"
-                      CanUserResizeColumns="False"
-                      CanUserSortColumns="False"
-                      ScrollViewer.CanContentScroll="False"
-                      ScrollViewer.VerticalScrollBarVisibility="Hidden"
-                      ScrollViewer.HorizontalScrollBarVisibility="Hidden">
-
-                <DataGrid.Columns>
-                    <DataGridTemplateColumn>
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <Grid HorizontalAlignment="Stretch"
-                                        DragEnter="RightGrid_DragEnter"
-                                        Drop="RightGrid_Drop"
-                                        AllowDrop="True">
-                                    <TextBlock Text="{Binding Name}" HorizontalAlignment="Left" Padding="5 0"/>
-                                </Grid>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-                </DataGrid.Columns>
-            </DataGrid>
-            -->
             <Button Click="Button_Click" Grid.Row="0" Grid.Column="1" />
         </Grid>
     </ScrollViewer>
